@@ -132,7 +132,6 @@ public class ScrumPokerSessionServiceImpl implements ScrumPokerSessionService {
             .limit(3)));
     }
 
-    // TODO implement tests
     @Override
     public ScrumPokerStatistics statistics(String userKey) {
         ScrumPokerStatistics statistics = new ScrumPokerStatistics();

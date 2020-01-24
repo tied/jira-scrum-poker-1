@@ -8,6 +8,7 @@ import de.codescape.jira.plugins.scrumpoker.ScrumPokerTestDatabaseUpdater;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
 import de.codescape.jira.plugins.scrumpoker.condition.ScrumPokerForIssueCondition;
 import de.codescape.jira.plugins.scrumpoker.model.GlobalSettings;
+import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
 import net.java.ao.EntityManager;
 import net.java.ao.test.converters.NameConverters;
 import net.java.ao.test.jdbc.Data;
@@ -234,6 +235,53 @@ public class ScrumPokerSessionServiceImplTest {
         when(scrumPokerForIssueCondition.isEstimable(ArgumentMatchers.any(Issue.class))).thenReturn(false);
         scrumPokerSessionService.byIssueKey("ISSUE-21", "USER-1");
         fail();
+    }
+
+    // statistics
+
+    @Test
+    public void statisticsCanOperateWithZeroData() {
+        ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
+        assertThat(statistics.getSessionsTotal(), is(equalTo(0L)));
+        assertThat(statistics.getVotesTotal(), is(equalTo(0L)));
+        assertThat(statistics.getSessionsParticipated(), is(equalTo(0L)));
+    }
+
+    @Test
+    public void statisticsCalculatesTotalNumberOfSessions() {
+        scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
+        scrumPokerSessionService.byIssueKey("ISSUE-2", "USER-1");
+        scrumPokerSessionService.byIssueKey("ISSUE-3", "USER-1");
+
+        ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
+        assertThat(statistics.getSessionsTotal(), is(equalTo(3L)));
+    }
+
+    @Test
+    public void statisticsCalculatesTotalNumberOfVotes() {
+        scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
+        scrumPokerSessionService.addVote("ISSUE-1", "USER-1", "3");
+        scrumPokerSessionService.addVote("ISSUE-1", "USER-2", "5");
+        scrumPokerSessionService.byIssueKey("ISSUE-2", "USER-1");
+        scrumPokerSessionService.addVote("ISSUE-2", "USER-3", "3");
+        scrumPokerSessionService.addVote("ISSUE-2", "USER-4", "3");
+
+        ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
+        assertThat(statistics.getVotesTotal(), is(equalTo(4L)));
+    }
+
+    @Test
+    public void statisticsCalculatesTotalNumberOfSessionsParticipated() {
+        scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
+        scrumPokerSessionService.addVote("ISSUE-1", "USER-1", "3");
+        scrumPokerSessionService.addVote("ISSUE-1", "ANOTHER-1", "5");
+        scrumPokerSessionService.byIssueKey("ISSUE-2", "USER-1");
+        scrumPokerSessionService.addVote("ISSUE-2", "ANOTHER-2", "3");
+        scrumPokerSessionService.addVote("ISSUE-2", "ANOTHER-1", "3");
+        scrumPokerSessionService.byIssueKey("ISSUE-3", "ANOTHER-1");
+
+        ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
+        assertThat(statistics.getSessionsParticipated(), is(equalTo(1L)));
     }
 
 }

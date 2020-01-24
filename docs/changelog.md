@@ -14,6 +14,7 @@ Click on the version in the following list to see all changes since the previous
 * feat: current page name is included in page title on active session page
 * feat: introduce statistics page with global and user specific statistics
 * test: add test for new action to display statistics page
+* test: add tests for statistics calculation in service class
 
 ### [4.8.2] - 2020-01-22
 
