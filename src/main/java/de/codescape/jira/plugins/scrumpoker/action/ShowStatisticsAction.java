@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Show some statistics for the currently logged in user.
  */
-// TODO implement tests
 public class ShowStatisticsAction extends AbstractScrumPokerAction {
 
     private final ScrumPokerSessionService scrumPokerSessionService;
