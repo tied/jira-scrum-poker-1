@@ -2,6 +2,7 @@ package de.codescape.jira.plugins.scrumpoker.service;
 
 import com.atlassian.activeobjects.tx.Transactional;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
+import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
 
 import java.util.List;
 
@@ -80,5 +81,13 @@ public interface ScrumPokerSessionService {
      * @return List of Scrum Poker sessions
      */
     List<ScrumPokerSession> references(String userKey, Integer estimation);
+
+    /**
+     * Return a couple of statistics for displaying purposes.
+     *
+     * @param userKey key of the user
+     * @return statistics
+     */
+    ScrumPokerStatistics statistics(String userKey);
 
 }

@@ -1,0 +1,65 @@
+<html>
+<head>
+    <title>${i18n.getText("scrumpoker.title")} - $i18n.getText("scrumpoker.statistics.title")</title>
+    $webResourceManager.requireResource("de.codescape.jira.plugins.scrum-poker:scrum-poker-resources")
+</head>
+<body class="scrum-poker scrum-poker-statistics">
+
+<header class="aui-page-header">
+    <div class="aui-page-header-inner">
+        <div class="aui-page-header-image">
+            <span class="aui-avatar aui-avatar-large aui-avatar-project">
+                <span class="aui-avatar-inner">
+                    <img alt="Scrum Poker Logo" src="$req.contextPath/download/resources/de.codescape.jira.plugins.scrum-poker:scrum-poker-resources/images/scrum-poker-logo-144.png" width="72" height="72">
+                </span>
+            </span>
+        </div>
+        <div class="aui-page-header-main">
+            <ol class="aui-nav aui-nav-breadcrumbs">
+                <li class="aui-nav-selected">$i18n.getText("scrumpoker.title")</li>
+            </ol>
+            <h1>$i18n.getText("scrumpoker.statistics.title")</h1>
+        </div>
+        <div class="aui-page-header-actions">
+            <div class="aui-buttons">
+                <a href="$req.contextPath/secure/ScrumPokerSessions.jspa">
+                    <button class="aui-button aui-button-light"><span class="aui-icon aui-icon-small aui-iconfont-list"></span> $i18n.getText("scrumpoker.sessions.list")</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="aui-page-panel" style="margin: 0;">
+    <div class="aui-page-panel-inner">
+        <section class="aui-page-panel-content">
+            <div class="aui-group">
+                <div class="aui-item">
+                    <h4>$i18n.getText("scrumpoker.statistics.global")</h4>
+                    <table class="aui">
+                        <tr>
+                            <th>$i18n.getText("scrumpoker.statistics.sessions.total")</th>
+                            <td>$statistics.sessionsTotal</td>
+                        </tr>
+                        <tr>
+                            <th>$i18n.getText("scrumpoker.statistics.votes.total")</th>
+                            <td>$statistics.votesTotal</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="aui-item">
+                    <h4>$i18n.getText("scrumpoker.statistics.personal")</h4>
+                    <table class="aui">
+                        <tr>
+                            <th>$i18n.getText("scrumpoker.statistics.sessions.participated")</th>
+                            <td>$statistics.sessionsParticipated</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+</body>
+</html>

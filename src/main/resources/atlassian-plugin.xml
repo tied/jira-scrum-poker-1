@@ -75,6 +75,10 @@
         <label key="scrumpoker.sessions.list"/>
         <link>/secure/ScrumPokerSessions.jspa?boardId=${board.id}</link>
     </web-item>
+    <web-item key="scrum-poker-statistics-link" section="scrum-poker-sessions" weight="20">
+        <label key="scrumpoker.statistics.title"/>
+        <link>/secure/ScrumPokerStatistics.jspa</link>
+    </web-item>
 
     <!-- section in Jira Software boards dropdown -->
     <web-section key="scrum-poker-menu" location="greenhopper_menu" weight="100">
@@ -83,6 +87,10 @@
     <web-item key="scrum-poker-menu-active-sessions" section="greenhopper_menu/scrum-poker-menu" weight="10">
         <label key="scrumpoker.sessions.list"/>
         <link>/secure/ScrumPokerSessions.jspa</link>
+    </web-item>
+    <web-item key="scrum-poker-menu-statistics" section="greenhopper_menu/scrum-poker-menu" weight="20">
+        <label key="scrumpoker.statistics.title"/>
+        <link>/secure/ScrumPokerStatistics.jspa</link>
     </web-item>
 
     <!-- configuration in app administration sidebar -->
@@ -137,6 +145,10 @@
                     roles-required="use">
                 <view name="success">/templates/show.vm</view>
                 <view name="error">/templates/error.vm</view>
+            </action>
+            <action name="de.codescape.jira.plugins.scrumpoker.action.ShowStatisticsAction" alias="ScrumPokerStatistics"
+                    roles-required="use">
+                <view name="success">/templates/statistics.vm</view>
             </action>
         </actions>
     </webwork1>

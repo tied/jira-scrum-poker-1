@@ -7,6 +7,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerVote;
 import de.codescape.jira.plugins.scrumpoker.condition.ScrumPokerForIssueCondition;
+import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
 import net.java.ao.DBParam;
 import net.java.ao.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +130,23 @@ public class ScrumPokerSessionServiceImpl implements ScrumPokerSessionService {
             .where("SPV.USER_KEY = ? and SPS.CONFIRMED_VOTE = ?", userKey, estimation)
             .order("SPS.CONFIRMED_DATE DESC")
             .limit(3)));
+    }
+
+    // TODO implement tests
+    @Override
+    public ScrumPokerStatistics statistics(String userKey) {
+        ScrumPokerStatistics statistics = new ScrumPokerStatistics();
+        // total number of sessions
+        statistics.setSessionsTotal(activeObjects.count(ScrumPokerSession.class));
+        // total number of votes
+        statistics.setVotesTotal(activeObjects.count(ScrumPokerVote.class));
+        // total number of sessions the user has participated in
+        statistics.setSessionsParticipated(activeObjects.count(ScrumPokerSession.class, Query.select()
+            .alias(ScrumPokerSession.class, "SPS")
+            .alias(ScrumPokerVote.class, "SPV")
+            .join(ScrumPokerVote.class, "SPV.SESSION_ID = SPS.ISSUE_KEY")
+            .where("SPV.USER_KEY = ?", userKey)));
+        return statistics;
     }
 
     private Date sessionTimeout() {
