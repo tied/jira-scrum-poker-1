@@ -45,6 +45,20 @@
                             <th>$i18n.getText("scrumpoker.statistics.votes.total")</th>
                             <td>$statistics.votesTotal</td>
                         </tr>
+                        <tr>
+                            <th>$i18n.getText("scrumpoker.statistics.votes.distribution.total")</th>
+                            <td>
+                                #if(!$statistics.globalVotesDistribution.isEmpty())
+                                    <ul>
+                                        #foreach($globalVote in $statistics.globalVotesDistribution)
+                                        <li>value: $globalVote.vote count: $globalVote.count</li>
+                                        #end
+                                    </ul>
+                                #else
+                                    <p><i>$i18n.getText("scrumpoker.statistics.nodata")</i></p>
+                                #end
+                            </td>
+                        </tr>
                     </table>
                 </div>
                 <div class="aui-item">
@@ -53,6 +67,20 @@
                         <tr>
                             <th>$i18n.getText("scrumpoker.statistics.sessions.participated")</th>
                             <td>$statistics.sessionsParticipated</td>
+                        </tr>
+                        <tr>
+                            <th>$i18n.getText("scrumpoker.statistics.votes.distribution.personal")</th>
+                            <td>
+                                #if(!$statistics.personalVotesDistribution.isEmpty())
+                                    <ul>
+                                        #foreach($personalVote in $statistics.personalVotesDistribution)
+                                        <li>value: $personalVote.vote count: $personalVote.count</li>
+                                        #end
+                                    </ul>
+                                #else
+                                    <p><i>$i18n.getText("scrumpoker.statistics.nodata")</i></p>
+                                #end
+                            </td>
                         </tr>
                     </table>
                 </div>

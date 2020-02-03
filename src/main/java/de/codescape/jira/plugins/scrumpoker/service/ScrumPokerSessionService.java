@@ -2,7 +2,7 @@ package de.codescape.jira.plugins.scrumpoker.service;
 
 import com.atlassian.activeobjects.tx.Transactional;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
-import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
+import de.codescape.jira.plugins.scrumpoker.model.statistics.ScrumPokerStatistics;
 
 import java.util.List;
 

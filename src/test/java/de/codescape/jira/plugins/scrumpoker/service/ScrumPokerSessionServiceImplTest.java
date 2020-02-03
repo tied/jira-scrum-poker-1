@@ -4,11 +4,13 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.pocketknife.api.querydsl.DatabaseAccessor;
+import com.querydsl.core.Tuple;
 import de.codescape.jira.plugins.scrumpoker.ScrumPokerTestDatabaseUpdater;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
 import de.codescape.jira.plugins.scrumpoker.condition.ScrumPokerForIssueCondition;
 import de.codescape.jira.plugins.scrumpoker.model.GlobalSettings;
-import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
+import de.codescape.jira.plugins.scrumpoker.model.statistics.ScrumPokerStatistics;
 import net.java.ao.EntityManager;
 import net.java.ao.test.converters.NameConverters;
 import net.java.ao.test.jdbc.Data;
@@ -20,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +48,8 @@ public class ScrumPokerSessionServiceImplTest {
 
     private ScrumPokerForIssueCondition scrumPokerForIssueCondition;
 
+    private DatabaseAccessor databaseAccessor;
+
     @Before
     public void before() {
         activeObjects = new TestActiveObjects(entityManager);
@@ -63,8 +68,10 @@ public class ScrumPokerSessionServiceImplTest {
 
         ScrumPokerErrorService scrumPokerErrorService = mock(ScrumPokerErrorService.class);
 
+        databaseAccessor = mock(DatabaseAccessor.class);
+
         scrumPokerSessionService = new ScrumPokerSessionServiceImpl(activeObjects, issueManager,
-            scrumPokerSettingsService, scrumPokerForIssueCondition, scrumPokerErrorService);
+            scrumPokerSettingsService, scrumPokerForIssueCondition, scrumPokerErrorService, databaseAccessor);
     }
 
     @Test
@@ -241,6 +248,7 @@ public class ScrumPokerSessionServiceImplTest {
 
     @Test
     public void statisticsCanOperateWithZeroData() {
+        when(databaseAccessor.run(any(), any())).thenReturn(new ArrayList<Tuple>());
         ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
         assertThat(statistics.getSessionsTotal(), is(equalTo(0L)));
         assertThat(statistics.getVotesTotal(), is(equalTo(0L)));
@@ -249,6 +257,7 @@ public class ScrumPokerSessionServiceImplTest {
 
     @Test
     public void statisticsCalculatesTotalNumberOfSessions() {
+        when(databaseAccessor.run(any(), any())).thenReturn(new ArrayList<Tuple>());
         scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
         scrumPokerSessionService.byIssueKey("ISSUE-2", "USER-1");
         scrumPokerSessionService.byIssueKey("ISSUE-3", "USER-1");
@@ -259,6 +268,7 @@ public class ScrumPokerSessionServiceImplTest {
 
     @Test
     public void statisticsCalculatesTotalNumberOfVotes() {
+        when(databaseAccessor.run(any(), any())).thenReturn(new ArrayList<Tuple>());
         scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
         scrumPokerSessionService.addVote("ISSUE-1", "USER-1", "3");
         scrumPokerSessionService.addVote("ISSUE-1", "USER-2", "5");
@@ -272,6 +282,7 @@ public class ScrumPokerSessionServiceImplTest {
 
     @Test
     public void statisticsCalculatesTotalNumberOfSessionsParticipated() {
+        when(databaseAccessor.run(any(), any())).thenReturn(new ArrayList<Tuple>());
         scrumPokerSessionService.byIssueKey("ISSUE-1", "USER-1");
         scrumPokerSessionService.addVote("ISSUE-1", "USER-1", "3");
         scrumPokerSessionService.addVote("ISSUE-1", "ANOTHER-1", "5");
@@ -283,5 +294,7 @@ public class ScrumPokerSessionServiceImplTest {
         ScrumPokerStatistics statistics = scrumPokerSessionService.statistics("USER-1");
         assertThat(statistics.getSessionsParticipated(), is(equalTo(1L)));
     }
+
+    // TODO add tests for vote distribution statistics
 
 }

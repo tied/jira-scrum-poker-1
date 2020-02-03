@@ -152,6 +152,12 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+        <!-- see https://bitbucket.org/atlassian/atlassian-pocketknife-querydsl -->
+        <dependency>
+            <groupId>com.atlassian.pocketknife</groupId>
+            <artifactId>atlassian-pocketknife-querydsl</artifactId>
+            <version>5.0.5</version>
+        </dependency>
 
         <!-- test dependencies -->
         <dependency>
@@ -234,6 +240,8 @@
                 <configuration>
                     <allowGoogleTracking>false</allowGoogleTracking>
                     <enableQuickReload>true</enableQuickReload>
+                    <extractDependencies>false</extractDependencies>
+                    <jvmArgs>-Xmx2048m -Datlassian.mail.senddisabled=false</jvmArgs>
                     <pluginArtifacts>
                         <pluginArtifact>
                             <groupId>com.atlassian.labs.plugins</groupId>
@@ -248,10 +256,24 @@
                             de.codescape.jira.plugins.scrumpoker,
                         </Export-Package>
                         <Import-Package>
+                            <!-- osgi imports -->
+                            org.springframework.osgi.*;resolution:="optional",
+                            org.eclipse.gemini.blueprint.*;resolution:="optional",
+
+                            <!-- jira stuff -->
                             com.atlassian.plugin.web,
                             com.atlassian.plugin.web.baseconditions,
                             com.atlassian.jira.plugin.webfragment.conditions,
-                            *
+
+                            <!-- required for spring lifecycle annotations -->
+                            javax.annotation,
+
+                            <!-- exclude stuff for querydsl pocketknife -->
+                            !net.sf.cglib.proxy,
+                            !org.jvnet.hudson.annotation_indexer,
+
+                            <!-- everything else -->
+                            *;resolution:=optional
                         </Import-Package>
                         <Spring-Context>*</Spring-Context>
                     </instructions>
@@ -330,6 +352,14 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- list of compile scoped dependencies to be scanned for spring components -->
+                    <scannedDependencies>
+                        <dependency>
+                            <groupId>com.atlassian.pocketknife</groupId>
+                            <artifactId>atlassian-pocketknife-querydsl</artifactId>
+                        </dependency>
+                    </scannedDependencies>
+                    <!-- enable to get build-time logging of annotations that have been noticed -->
                     <verbose>false</verbose>
                 </configuration>
             </plugin>

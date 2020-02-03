@@ -2,7 +2,7 @@ package de.codescape.jira.plugins.scrumpoker.action;
 
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
-import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
+import de.codescape.jira.plugins.scrumpoker.model.statistics.ScrumPokerStatistics;
 import de.codescape.jira.plugins.scrumpoker.service.ScrumPokerSessionService;
 import org.junit.Rule;
 import org.junit.Test;

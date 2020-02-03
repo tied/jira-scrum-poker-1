@@ -4,10 +4,15 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.pocketknife.api.querydsl.DatabaseAccessor;
+import com.atlassian.pocketknife.api.querydsl.util.OnRollback;
+import com.querydsl.core.Tuple;
+import com.querydsl.sql.SQLExpressions;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerSession;
 import de.codescape.jira.plugins.scrumpoker.ao.ScrumPokerVote;
 import de.codescape.jira.plugins.scrumpoker.condition.ScrumPokerForIssueCondition;
-import de.codescape.jira.plugins.scrumpoker.model.ScrumPokerStatistics;
+import de.codescape.jira.plugins.scrumpoker.model.statistics.ScrumPokerStatistics;
+import de.codescape.jira.plugins.scrumpoker.model.statistics.VoteDistribution;
 import net.java.ao.DBParam;
 import net.java.ao.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,9 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static de.codescape.jira.plugins.scrumpoker.ao.tables.ScrumPokerTables.SCRUM_POKER_VOTE;
 
 /**
  * Implementation of {@link ScrumPokerSessionService} using Active Objects as persistence model.
@@ -28,18 +36,21 @@ public class ScrumPokerSessionServiceImpl implements ScrumPokerSessionService {
     private final ScrumPokerSettingService scrumPokerSettingService;
     private final ScrumPokerForIssueCondition scrumPokerForIssueCondition;
     private final ScrumPokerErrorService scrumPokerErrorService;
+    private final DatabaseAccessor databaseAccessor;
 
     @Autowired
-    public ScrumPokerSessionServiceImpl(ActiveObjects activeObjects,
+    public ScrumPokerSessionServiceImpl(@ComponentImport ActiveObjects activeObjects,
                                         @ComponentImport IssueManager issueManager,
                                         ScrumPokerSettingService scrumPokerSettingService,
                                         ScrumPokerForIssueCondition scrumPokerForIssueCondition,
-                                        ScrumPokerErrorService scrumPokerErrorService) {
+                                        ScrumPokerErrorService scrumPokerErrorService,
+                                        DatabaseAccessor databaseAccessor) {
         this.activeObjects = activeObjects;
         this.issueManager = issueManager;
         this.scrumPokerSettingService = scrumPokerSettingService;
         this.scrumPokerForIssueCondition = scrumPokerForIssueCondition;
         this.scrumPokerErrorService = scrumPokerErrorService;
+        this.databaseAccessor = databaseAccessor;
     }
 
     @Override
@@ -132,6 +143,7 @@ public class ScrumPokerSessionServiceImpl implements ScrumPokerSessionService {
             .limit(3)));
     }
 
+    // TODO extract statistics calculation into own dao/service class
     @Override
     public ScrumPokerStatistics statistics(String userKey) {
         ScrumPokerStatistics statistics = new ScrumPokerStatistics();
@@ -145,7 +157,38 @@ public class ScrumPokerSessionServiceImpl implements ScrumPokerSessionService {
             .alias(ScrumPokerVote.class, "SPV")
             .join(ScrumPokerVote.class, "SPV.SESSION_ID = SPS.ISSUE_KEY")
             .where("SPV.USER_KEY = ?", userKey)));
+        // global votes distribution
+        List<VoteDistribution> globalVotesDistribution = databaseAccessor.run(
+            databaseConnection -> databaseConnection
+                .select(SCRUM_POKER_VOTE.VOTE, SQLExpressions.count())
+                .from(SCRUM_POKER_VOTE)
+                .groupBy(SCRUM_POKER_VOTE.VOTE)
+                .fetch(),
+            OnRollback.NOOP)
+            .stream()
+            .map(this::createDistribution)
+            .collect(Collectors.toList());
+        statistics.setGlobalVotesDistribution(globalVotesDistribution);
+        // personal votes distribution
+        List<VoteDistribution> personalVotesDistribution = databaseAccessor.run(
+            databaseConnection -> databaseConnection
+                .select(SCRUM_POKER_VOTE.VOTE, SQLExpressions.count())
+                .from(SCRUM_POKER_VOTE)
+                .groupBy(SCRUM_POKER_VOTE.VOTE)
+                .where(SCRUM_POKER_VOTE.USER_KEY.eq(userKey))
+                .fetch(),
+            OnRollback.NOOP)
+            .stream()
+            .map(this::createDistribution)
+            .collect(Collectors.toList());
+        statistics.setPersonalVotesDistribution(personalVotesDistribution);
         return statistics;
+    }
+
+    private VoteDistribution createDistribution(Tuple tuple) {
+        String vote = tuple.get(0, String.class);
+        Long count = tuple.get(1, Long.class);
+        return new VoteDistribution(vote, count);
     }
 
     private Date sessionTimeout() {

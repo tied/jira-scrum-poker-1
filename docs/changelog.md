@@ -15,7 +15,8 @@ Click on the version in the following list to see all changes since the previous
 * feat: introduce statistics page with global and user specific statistics
 * test: add test for new action to display statistics page
 * test: add tests for statistics calculation in service class
-* fix: ensure migration task 7 performs correctly  
+* fix: ensure migration task 7 performs correctly
+* feat: add statistics for global and personal vote distribution
 
 ### [4.8.2] - 2020-01-22
 
