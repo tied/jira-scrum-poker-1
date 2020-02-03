@@ -17,6 +17,7 @@ Click on the version in the following list to see all changes since the previous
 * test: add tests for statistics calculation in service class
 * fix: ensure migration task 7 performs correctly
 * feat: add statistics for global and personal vote distribution
+* chore: format style sheets according to standard
 
 ### [4.8.2] - 2020-01-22
 
