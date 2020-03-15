@@ -141,6 +141,14 @@
         </actions>
     </webwork1>
 
+    <!-- active session indicator on issue detail page -->
+    <web-panel key="scrum-poker-active-session-indicator" location="atl.jira.view.issue.right.context" weight="100">
+        <context-provider class="de.codescape.jira.plugins.scrumpoker.IssueDetailPanelContextProvider"/>
+        <resource name="view" type="velocity" location="/templates/join.vm"/>
+        <label key="scrumpoker.title"/>
+        <condition class="de.codescape.jira.plugins.scrumpoker.condition.ScrumPokerForIssueCondition"/>
+    </web-panel>
+
     <!-- rest endpoint -->
     <rest key="scrum-poker-rest" path="/scrumpoker" version="1.0"/>
 

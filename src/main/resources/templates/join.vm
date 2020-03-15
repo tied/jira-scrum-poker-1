@@ -1,0 +1,38 @@
+#if ($found)
+    #if ($running)
+        <p>Es gibt eine aktive Sitzung:</p>
+        <div class="item-details">
+            <dl>
+                <dt>Gestartet:</dt>
+                <dd>$startedBy ($started)</dd>
+            </dl>
+            <dl>
+                <dt>Teilnehmer:</dt>
+                <dd>$participants</dd>
+            </dl>
+            <a href="$contextPath/secure/ScrumPoker.jspa?issueKey=$issueKey">$i18n.getText("scrumpoker.session.join")</a>
+        </div>
+    #else
+        <p>Die Sitzung wurde kürzlich beendet:</p>
+        <div class="item-details">
+            <dl>
+                <dt>Gestartet:</dt>
+                <dd>$startedBy ($started)</dd>
+            </dl>
+            <dl>
+                <dt>Teilnehmer:</dt>
+                <dd>$participants</dd>
+            </dl>
+            <dl>
+                <dt>Ergebnis:</dt>
+                #if ($cancelled)
+                    <dd><i>abgebrochen</i></dd>
+                #else
+                    <dd>$estimate ($finished)</dd>
+                #end
+            </dl>
+        </div>
+    #end
+#else
+    <p>Es gibt keine aktive Sitzung.</p>
+#end

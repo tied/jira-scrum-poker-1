@@ -11,7 +11,7 @@ Click on the version in the following list to see all changes since the previous
 
 ### [Unreleased]
 
-* ...
+* feat: show Scrum Poker session status on issue detail page 
 
 ### [4.9.0] - 2020-02-16
 
